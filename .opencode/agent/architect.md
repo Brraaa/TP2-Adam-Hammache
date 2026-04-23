@@ -13,15 +13,10 @@ permission:
   task: allow
   todowrite: allow
   question: allow
-  webfetch: ask
-  edit: deny
+  webfetch: allow
+  edit: allow
   bash:
-    "*": deny
-    "git status*": allow
-    "git diff*": allow
-    "git log*": allow
-    "git branch*": allow
-    "ls*": allow
+    "*": allow
 ---
 
 You are the architect. You own the goal, the decomposition, the verification and the
