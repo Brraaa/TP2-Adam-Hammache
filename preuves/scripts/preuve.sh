@@ -91,6 +91,21 @@ case "$1" in
     run "node -e \"console.log(Object.keys(require('./opencode.json').mcp ?? {}).join(', ') || '(aucun MCP declare)')\""
     run "node '$here/../mesure-mcp.mjs' opencode.json 2>&1 | cut -c1-230"
     ;;
+  mcp-detail)
+    titre "Serveurs locaux : demarrage, outils qui ecrivent, un vrai appel sans jeton"
+    run "node '$here/../mesure-mcp-detail.mjs' opencode.json 2>&1 | cut -c1-200"
+    titre "Paquets lances par npx -y : version figee ? toujours maintenus ?"
+    for p in $(node -e "for (const c of Object.values(require('./opencode.json').mcp ?? {})) if (c.command) console.log(c.command[c.command.length-1])"); do
+      printf '  %-40s deprecie sur npm : %s
+' "$p" "$(npm view "${p%@latest}" deprecated 2>/dev/null | head -c 34 | grep . || echo non)"
+    done
+    titre "Jetons : attendus par la config, fournis nulle part"
+    run "grep -o '[$]{[A-Z_]*}' opencode.json; grep -c environment opencode.json; git show HEAD:.env 2>/dev/null | grep -c SALLES_MCP_TOKEN"
+    titre "Qui s'en sert ? (rules, README, prompts des agents, command)"
+    run "grep -rniE 'salles-db|github|notion|slack|sentry|playwright|mcp' AGENTS.md README.md .opencode/agent .opencode/command | wc -l"
+    run "grep -lE '(salles|github|notion|slack|sentry|playwright).*: *(allow|ask)' .opencode/agent/*.md | wc -l; grep -l '\"\*\": deny' .opencode/agent/*.md | wc -l"
+    run "git log --format='%h %ad %s' --date=short -- opencode.json | head -3"
+    ;;
   couverture)
     titre "Couverture des tests qui s'executent"
     run "npx vitest run --coverage --coverage.include='src/**' --coverage.reporter=text 2>&1 | nocolor | grep -E '^\s*(File|All files|[a-z/.]+\.ts| lib| routes| src)|Tests '"

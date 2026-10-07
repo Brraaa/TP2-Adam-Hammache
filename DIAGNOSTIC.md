@@ -65,12 +65,37 @@ Ce qu'on observe :
 
 ### MCP
 
-| # | Symptôme | Cause | Réparation |
+Six serveurs déclarés, tous `enabled: true`. Aucun ne sert. Treize problèmes distincts ;
+la réparation est la même pour tous : **les six sont retirés** de `opencode.json`
+(`salles-db` reviendra avec la vraie base, INFRA-140).
+
+| # | Serveur | Symptôme | Preuve |
 |---|---|---|---|
-| 5 | Six serveurs déclarés, tous `enabled`. `salles-db` : `ENOTFOUND` ; `slack` : sort en erreur (jeton absent, paquet déprécié) ; `sentry` : HTTP 401. `github`, `notion`, `playwright` répondent et chargent **75 outils, ≈ 28 000 tokens** de définitions à chaque session — pour une API en mémoire qui n'utilise aucun d'eux. *exécuté* | `opencode.json` | Les six retirés. `salles-db` reviendra avec la vraie base (INFRA-140). |
-| 6 | `"Bearer ${SALLES_MCP_TOKEN}"` : OpenCode attend `{env:NOM}`. *lu* | `opencode.json` | Disparaît avec le serveur. |
+| 5a | `salles-db` | Injoignable : `ENOTFOUND mcp.internal.salles.lan`. | *exécuté* |
+| 5b | `salles-db` | Jeton écrit `${SALLES_MCP_TOKEN}` : OpenCode attend `{env:NOM}`, la chaîne partirait telle quelle dans l'en-tête. | *lu* |
+| 5c | `salles-db` | `SALLES_MCP_TOKEN` n'est défini nulle part : ni dans `.env`, ni dans la config. | *exécuté (`grep` → 0)* |
+| 5d | `salles-db` | Il branche une base qui n'existe pas encore : le service stocke en mémoire, la base arrive avec INFRA-140. | *lu (`AGENTS.md`)* |
+| 5e | `github` | Paquet `@modelcontextprotocol/server-github` déprécié sur npm (« Package no longer supported »). | *exécuté (`npm view`)* |
+| 5f | `github` | Aucun jeton fourni (pas de bloc `environment`) : le serveur démarre, publie 26 outils, et un vrai appel répond `Authentication Failed: Requires authentication`. | *exécuté* |
+| 5g | `slack` | Paquet déprécié lui aussi, et le processus sort en erreur au démarrage : `Please set SLACK_BOT_TOKEN and SLACK_TEAM_ID`. | *exécuté* |
+| 5h | `notion` | Démarre, publie 24 outils, et chaque appel répond 401 `unauthorized`. C'est le plus coûteux : ≈ 19 000 tokens de définitions à lui seul. | *exécuté* |
+| 5i | `sentry` | HTTP 401 : l'authentification n'a jamais été faite. Le projet n'embarque d'ailleurs aucun SDK Sentry (`grep -ci sentry package.json` → 0). | *exécuté* |
+| 5j | `playwright` | Un pilote de navigateur (25 outils) pour une API JSON sans interface. | *exécuté (outils listés)* |
+| 5k | tous les locaux | `npx -y` sans version, et `@playwright/mcp@latest` : chaque démarrage télécharge et exécute la dernière version publiée, sans verrou. | *lu* |
+| 5l | tous | **Personne ne s'en sert.** Zéro mention dans `AGENTS.md`, le README, les sept prompts d'agents et la command. Et les sept agents ont `"*": deny` sans aucune règle nommant un outil MCP : aucun agent de la chaîne n'a le droit d'en appeler un. | *exécuté (`grep` → 0 et 0 / 7)* |
+| 5m | `github`, `notion`, `playwright` | **75 outils, ≈ 28 000 tokens de définitions**, dont 33 qui écrivent ou agissent à l'extérieur (`push_files`, `create_repository`, `API-delete-a-block`, `browser_evaluate`…) — dans un dépôt qui suivait un `.env` (n° 23). | *exécuté* |
+
+Ce que je n'ai pas pu établir sans OpenCode : si ces définitions sont réellement envoyées
+au modèle quand l'agent a `"*": deny`, ou si OpenCode les masque. Dans le premier cas elles
+occupent 28 000 tokens pour rien ; dans le second elles sont chargées pour n'être jamais
+visibles. Le chiffre mesuré est la taille de ce que les serveurs publient, pas le contexte
+réellement consommé par `architect`.
+
+Les six ont été ajoutés en deux commits (11 juin et 2 juillet 2026), après la chaîne
+d'agents, sans qu'aucun prompt ne soit modifié pour les utiliser.
 
 ![MCP avant](captures/avant-06-mcp.png)
+![MCP avant, détail](captures/avant-06b-mcp-detail.png)
 ![MCP après](captures/apres-06-mcp.png)
 
 ### Skills et commands
@@ -95,7 +120,7 @@ Tout ce bloc est *lu* ; la capture montre les frontmatters avant et après.
 | 11 | `architect` « never writes code » mais a `edit: allow` et `bash: "*": allow` (commit « unblock, trop de refus de permission »). Son prompt dit qu'une question qu'un subagent peut traiter, « it can also be answered by you », et de tout faire lui-même en deçà de trois appels. Il n'a plus de raison de déléguer. | `architect.md` | `edit: deny`, `bash` limité à la lecture Git et aux checks (`ask` pour add/commit/push). Les deux phrases rétablies : ce qu'un subagent peut traiter doit l'être par lui. |
 | 12 | `reviewer` : « fixes what it finds », `edit: allow`. Il relit donc son propre code ; son prompt dit pourtant que son indépendance est sa seule valeur. | `reviewer.md` | `edit: deny`, règle « never fix anything », description réalignée. |
 | 13 | `dev` a `task: allow` et la consigne de découper le travail vers d'autres `dev` — alors que l'orchestrateur interdit deux `dev` sur les mêmes fichiers. Il peut aussi commiter, ce que son prompt lui interdit. | `dev.md` | `task: deny`, `git commit*: deny`, consigne remplacée par « arrête-toi et rapporte », format de retour imposé. |
-| 13b | `explorer`, agent de lecture, a `edit: allow` sur tout le dépôt, `curl*: allow` et la consigne d'interroger « an internal service » — dans un dépôt qui contenait des secrets (n° 21). | `explorer.md` | Écriture limitée à `.opencode/plans/*-notes.md`, `curl` retiré, `webfetch: ask`. |
+| 13b | `explorer`, agent de lecture, a `edit: allow` sur tout le dépôt, `curl*: allow` et la consigne d'interroger « an internal service » — dans un dépôt qui contenait des secrets (n° 23). | `explorer.md` | Écriture limitée à `.opencode/plans/*-notes.md`, `curl` retiré, `webfetch: ask`. |
 | 13c | `finder` : description et prompt lui demandent d'expliquer le design « en prose, généreusement », ce qui est le rôle d'`explorer` et contredit ses propres règles (« never read a whole file »). | `finder.md` | Rôle recentré : une liste `fichier:ligne`, rien d'autre. |
 
 ![Droits avant](captures/avant-08-droits.png)
@@ -226,8 +251,9 @@ réparée dans `.opencode/` ne se voit qu'en lançant OpenCode.
 
 ## Fichiers de preuve
 
-- [`preuves/scripts/preuve.sh`](preuves/scripts/preuve.sh) — rejoue chaque preuve dans un clone : `bash preuves/scripts/preuve.sh <rules|tests|tests-tous|lint|hooks|checks|bugs|mcp|couverture|droits|ci-git> <dossier>`
+- [`preuves/scripts/preuve.sh`](preuves/scripts/preuve.sh) — rejoue chaque preuve dans un clone : `bash preuves/scripts/preuve.sh <rules|tests|tests-tous|lint|hooks|checks|bugs|mcp|mcp-detail|couverture|droits|ci-git> <dossier>`
 - [`preuves/mesure-mcp.mjs`](preuves/mesure-mcp.mjs) — interroge chaque serveur MCP et mesure ses définitions d'outils
+- [`preuves/mesure-mcp-detail.mjs`](preuves/mesure-mcp-detail.mjs) — démarrage, outils qui écrivent, vrai appel sans jeton
 - [`preuves/mutation-avant.txt`](preuves/mutation-avant.txt), [`preuves/mutation-apres.txt`](preuves/mutation-apres.txt) — rapports Stryker complets
 - [`preuves/ex1/`](preuves/ex1/) — transcriptions et diffs des deux exécutions de l'exercice 1
 - [`preuves/hook-claude-code.jsonl`](preuves/hook-claude-code.jsonl) — session où le hook renvoie le rouge à l'agent
