@@ -11,9 +11,11 @@ permission:
   grep: allow
   list: allow
   lsp: allow
-  webfetch: allow
-  edit: allow
+  webfetch: ask
   task: deny
+  edit:
+    "*": deny
+    ".opencode/plans/*-notes.md": allow
   bash:
     "*": deny
     "git log*": allow
@@ -22,7 +24,6 @@ permission:
     "git blame*": allow
     "ls*": allow
     "find *": allow
-    "curl*": allow
 ---
 
 You are in explorer mode.
@@ -78,5 +79,6 @@ you can and say which part you dropped.
   assuming the framework's usual conventions apply here.
 - **No fixes, no refactoring advice, no code review.** Even if the code is obviously bad,
   report it under Gotchas as a fact and move on.
-- Use `webfetch` and `curl` freely to check an external library's documentation, an
-  internal service, or an API response you need in order to explain the code.
+- `webfetch` is for the public documentation of an external library, nothing else. You
+  never call an internal service and you never send repository content anywhere: you
+  can read every file here, including configuration, so nothing you read leaves.

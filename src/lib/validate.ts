@@ -13,9 +13,12 @@ export function requireString(payload: Record<string, unknown>, field: string): 
   return value;
 }
 
+// ISO 8601 UTC, la seule forme de date admise dans le depot (AGENTS.md, convention 3).
+const ISO_UTC = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z$/;
+
 export function requireDate(payload: Record<string, unknown>, field: string): string {
   const value = requireString(payload, field);
-  if (Number.isNaN(Date.parse(value))) {
+  if (!ISO_UTC.test(value) || Number.isNaN(Date.parse(value))) {
     throw new ValidationError(`date invalide : ${field}`);
   }
   return value;

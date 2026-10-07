@@ -1,0 +1,146 @@
+16:03:24 (15144) INFO ProjectReader Found 7 of 66 file(s) to be mutated.
+16:03:24 (15144) INFO Instrumenter Instrumented 7 source file(s) with 202 mutant(s)
+16:03:25 (15144) INFO ConcurrencyTokenProvider Creating 19 test runner process(es).
+16:03:26 (15144) INFO BroadcastReporter Detected that current console does not support the "progress" reporter, downgrading to "progress-append-only" reporter
+16:03:27 (15144) INFO DryRunExecutor Starting initial test run (vitest test runner with "perTest" coverage analysis). This may take a while.
+16:03:34 (15144) INFO DryRunExecutor Initial test run succeeded. Ran 59 tests in 6 seconds (net 794.3623000000002 ms, overhead 6172.637699999999 ms).
+16:03:34 (15144) WARN MutantTestPlanner Detected 48 static mutants (24% of total) that are estimated to take 48% of the time running the tests!
+  You might want to enable "ignoreStatic" to ignore these static mutants for your next run. 
+  For more information about static mutants visit: https://stryker-mutator.io/docs/mutation-testing-elements/static-mutants
+  (disable "warnings.slow" to ignore this warning)
+Mutation testing 7% (elapsed: <1m, remaining: ~1m) 21/202 tested (0 survived, 0 timed out)
+Mutation testing 18% (elapsed: <1m, remaining: ~1m) 49/202 tested (0 survived, 0 timed out)
+Mutation testing 36% (elapsed: <1m, remaining: <1m) 88/202 tested (1 survived, 0 timed out)
+Mutation testing 45% (elapsed: <1m, remaining: <1m) 123/202 tested (2 survived, 0 timed out)
+Mutation testing 49% (elapsed: <1m, remaining: <1m) 147/202 tested (2 survived, 0 timed out)
+Mutation testing 51% (elapsed: ~1m, remaining: <1m) 152/202 tested (2 survived, 0 timed out)
+Mutation testing 57% (elapsed: ~1m, remaining: <1m) 158/202 tested (2 survived, 0 timed out)
+Mutation testing 74% (elapsed: ~1m, remaining: <1m) 177/202 tested (5 survived, 12 timed out)
+Mutation testing 82% (elapsed: ~1m, remaining: <1m) 185/202 tested (5 survived, 14 timed out)
+Mutation testing 86% (elapsed: ~1m, remaining: <1m) 189/202 tested (5 survived, 15 timed out)
+
+All tests
+  bookings.spec.ts
+    ✓ POST /bookings refuse une salle inconnue (killed 12)
+    ✓ POST /bookings refuse un depassement de capacite (killed 4)
+    ✓ POST /bookings refuse une date invalide (killed 3)
+    ✓ POST /bookings refuse un creneau qui finit avant de commencer (killed 3)
+    ✓ POST /bookings accepte une reservation qui commence quand la precedente finit (killed 35)
+    ✓ POST /bookings refuse un creneau qui chevauche une reservation existante (killed 16)
+    ✓ POST /bookings refuse un creneau de duree nulle (killed 3)
+    ✓ POST /bookings accepte une salle remplie exactement a sa capacite (killed 2)
+    ✓ POST /bookings nomme la cause dans le message d'erreur (killed 7)
+    ✓ POST /bookings renvoie la reservation creee, avec son prix en nombre (killed 19)
+    ✓ GET /bookings liste toutes les reservations (killed 6)
+    ✓ GET /bookings filtre par salle (killed 6)
+    ✓ DELETE /bookings/:id annule une reservation, qui disparait de la liste (killed 10)
+    ✓ DELETE /bookings/:id repond 404 pour une reservation inconnue (killed 5)
+  overlap.spec.ts
+    ~ overlaps detecte deux creneaux qui se recouvrent (covered 10)
+    ✓ overlaps laisse passer deux creneaux eloignes (killed 1)
+    ✓ overlaps accepte deux creneaux bout a bout (killed 1)
+    ~ overlaps accepte deux creneaux bout a bout, dans l'autre sens (covered 7)
+    ~ overlaps detecte un creneau inclus dans un autre, dans les deux sens (covered 10)
+    ~ overlaps detecte deux creneaux identiques (covered 10)
+  price.spec.ts
+    ✓ priceFor facture les heures au tarif de la salle (killed 3)
+    ~ priceFor ajoute la majoration de week-end (covered 17)
+    ~ priceFor compte les heures entre deux bornes (covered 3)
+    ✓ priceFor reconnait le week-end (killed 1)
+  rooms.spec.ts
+    ✓ GET /health repond ok (killed 4)
+    ✓ GET /rooms renvoie le catalogue (killed 3)
+    ✓ GET /rooms renvoie une salle avec ses reservations (killed 4)
+    ✓ GET /rooms repond 404 pour une salle inconnue (killed 4)
+  store.spec.ts
+    ✘ store expose le catalogue de salles (covered 0)
+    ~ store retrouve une salle par son identifiant (covered 5)
+    ~ store ne trouve pas une salle inconnue (covered 5)
+    ~ store retourne les reservations d'une salle, et seulement les siennes (covered 6)
+    ~ store ne retourne aucune reservation pour une salle libre (covered 6)
+    ~ store numerote les reservations a la suite des existantes (covered 3)
+  validate.spec.ts
+    ~ requireString renvoie la chaine telle quelle (covered 11)
+    ~ requireString refuse undefined (covered 9)
+    ✓ requireString refuse "" (killed 2)
+    ✓ requireString refuse "   " (killed 1)
+    ~ requireString refuse 42 (covered 9)
+    ~ requireString refuse null (covered 9)
+    ✘ requireString porte le statut 400 (covered 0)
+    ✓ requireDate accepte 2026-11-02T09:00:00Z (killed 1)
+    ~ requireDate accepte 2026-11-02T09:00:00.250Z (covered 16)
+    ✓ requireDate refuse "la semaine prochaine", qui n'est pas de l'ISO 8601 UTC (killed 1)
+    ✓ requireDate refuse "Nov 2 2026", qui n'est pas de l'ISO 8601 UTC (killed 1)
+    ~ requireDate refuse "2026-11-02", qui n'est pas de l'ISO 8601 UTC (covered 18)
+    ~ requireDate refuse "2026-11-02T09:00:00", qui n'est pas de l'ISO 8601 UTC (covered 18)
+    ~ requireDate refuse "2026-11-02T09:00:00+01:00", qui n'est pas de l'ISO 8601 UTC (covered 18)
+    ~ requireDate refuse "2026-13-45T09:00:00Z", qui n'est pas de l'ISO 8601 UTC (covered 18)
+    ~ requireDate refuse " 2026-11-02T09:00:00Z", qui n'est pas de l'ISO 8601 UTC (covered 18)
+    ~ requireDate refuse "2026-11-02T09:00:00Z ", qui n'est pas de l'ISO 8601 UTC (covered 18)
+    ~ requireDate refuse un champ absent avec le message du champ manquant (covered 10)
+    ✓ requirePositiveInt accepte un entier strictement positif (killed 3)
+    ✓ requirePositiveInt refuse 0 (killed 6)
+    ~ requirePositiveInt refuse -3 (covered 15)
+    ✓ requirePositiveInt refuse 2.5 (killed 2)
+    ~ requirePositiveInt refuse "4" (covered 11)
+    ~ requirePositiveInt refuse undefined (covered 11)
+    ~ requirePositiveInt refuse null (covered 12)
+
+[Survived] ConditionalExpression
+src/lib/validate.ts:29:7
+-     if (typeof value !== "number" || !Number.isInteger(value) || value <= 0) {
++     if (false || !Number.isInteger(value) || value <= 0) {
+Tests ran:
+    POST /bookings refuse une salle inconnue
+    POST /bookings refuse un depassement de capacite
+    POST /bookings refuse une date invalide
+  and 15 more tests!
+
+
+[Survived] ConditionalExpression
+src/routes/bookings.ts:59:9
+-       if (err instanceof ValidationError) {
++       if (true) {
+Tests ran:
+    POST /bookings refuse une salle inconnue
+    POST /bookings refuse un depassement de capacite
+    POST /bookings refuse une date invalide
+  and 3 more tests!
+
+
+[Survived] StringLiteral
+src/routes/bookings.ts:9:20
+-   bookingsRouter.get("/", (req, res) => {
++   bookingsRouter.get("", (req, res) => {
+Ran all tests for this mutant.
+
+[Survived] StringLiteral
+src/routes/bookings.ts:18:21
+-   bookingsRouter.post("/", (req, res) => {
++   bookingsRouter.post("", (req, res) => {
+Ran all tests for this mutant.
+
+[Survived] StringLiteral
+src/routes/rooms.ts:6:17
+-   roomsRouter.get("/", (_req, res) => {
++   roomsRouter.get("", (_req, res) => {
+Ran all tests for this mutant.
+
+Ran 3.41 tests per mutant on average.
+--------------|------------------|----------|-----------|------------|----------|----------|
+              | % Mutation score |          |           |            |          |          |
+File          |  total | covered | # killed | # timeout | # survived | # no cov | # errors |
+--------------|--------|---------|----------|-----------|------------|----------|----------|
+All files     |  97.52 |   97.52 |      169 |        28 |          5 |        0 |        0 |
+ lib          |  98.73 |   98.73 |       67 |        11 |          1 |        0 |        0 |
+  overlap.ts  | 100.00 |  100.00 |       10 |         0 |          0 |        0 |        0 |
+  price.ts    | 100.00 |  100.00 |       17 |         0 |          0 |        0 |        0 |
+  validate.ts |  98.08 |   98.08 |       40 |        11 |          1 |        0 |        0 |
+ routes       |  94.67 |   94.67 |       70 |         1 |          4 |        0 |        0 |
+  bookings.ts |  95.24 |   95.24 |       60 |         0 |          3 |        0 |        0 |
+  rooms.ts    |  91.67 |   91.67 |       10 |         1 |          1 |        0 |        0 |
+ app.ts       | 100.00 |  100.00 |        8 |         0 |          0 |        0 |        0 |
+ store.ts     | 100.00 |  100.00 |       24 |        16 |          0 |        0 |        0 |
+--------------|--------|---------|----------|-----------|------------|----------|----------|
+16:05:24 (15144) INFO MutationTestReportHelper Final mutation score of 97.52 is greater than or equal to break threshold 70
+16:05:24 (15144) INFO MutationTestExecutor Done in 2 minutes and 0 seconds.

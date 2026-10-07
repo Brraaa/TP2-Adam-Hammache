@@ -31,7 +31,12 @@ curl -s -X POST localhost:3000/bookings \
 ## Outillage agent
 
 Le depot embarque une chaine d'agents OpenCode (`.opencode/`) : un agent principal
-`architect` et six subagents specialises. `opencode agent` les liste.
+`architect`, qui ne modifie jamais le code, et six subagents specialises (`finder`,
+`explorer`, `planner`, `dev`, `reviewer`, `tester`). `opencode agent list` les liste.
+Seul `dev` ecrit dans `src/` et `test/`.
+
+Les garde-fous : `npm run check` (typecheck strict, lint, tests), relance apres chaque
+ecriture d'un `.ts` par un agent, au pre-commit (husky) et dans la CI. Voir `AGENTS.md`.
 
 ## Etat du projet
 

@@ -1,0 +1,1186 @@
+15:57:33 (27944) INFO ProjectReader Found 7 of 37 file(s) to be mutated.
+15:57:34 (27944) INFO Instrumenter Instrumented 7 source file(s) with 184 mutant(s)
+15:57:35 (27944) INFO ConcurrencyTokenProvider Creating 19 test runner process(es).
+15:57:37 (27944) INFO BroadcastReporter Detected that current console does not support the "progress" reporter, downgrading to "progress-append-only" reporter
+15:57:39 (27944) INFO DryRunExecutor Starting initial test run (vitest test runner with "perTest" coverage analysis). This may take a while.
+15:57:41 (27944) INFO DryRunExecutor Initial test run succeeded. Ran 5 tests in 2 seconds (net 18.686600000000453 ms, overhead 2065.3133999999995 ms).
+15:57:41 (27944) WARN MutantTestPlanner Detected 26 static mutants (14% of total) that are estimated to take 84% of the time running the tests!
+  You might want to enable "ignoreStatic" to ignore these static mutants for your next run. 
+  For more information about static mutants visit: https://stryker-mutator.io/docs/mutation-testing-elements/static-mutants
+  (disable "warnings.slow" to ignore this warning)
+
+All tests
+  overlap.spec.ts
+    ✓ overlaps detecte deux creneaux qui se recouvrent (killed 4)
+    ✓ overlaps laisse passer deux creneaux eloignes (killed 3)
+  store.spec.ts
+    ✓ store expose le catalogue de salles (killed 1)
+    ✘ store retrouve une salle par son identifiant (covered 0)
+    ✘ store ne retourne aucune reservation pour une salle libre (covered 0)
+
+[Survived] EqualityOperator
+src/lib/overlap.ts:11:10
+-     return a1 <= b2 && b1 <= a2;
++     return a1 < b2 && b1 <= a2;
+Tests ran:
+    overlaps detecte deux creneaux qui se recouvrent
+    overlaps laisse passer deux creneaux eloignes
+
+
+[Survived] ConditionalExpression
+src/lib/overlap.ts:11:10
+-     return a1 <= b2 && b1 <= a2;
++     return true && b1 <= a2;
+Tests ran:
+    overlaps detecte deux creneaux qui se recouvrent
+    overlaps laisse passer deux creneaux eloignes
+
+
+[Survived] EqualityOperator
+src/lib/overlap.ts:11:22
+-     return a1 <= b2 && b1 <= a2;
++     return a1 <= b2 && b1 < a2;
+Tests ran:
+    overlaps detecte deux creneaux qui se recouvrent
+    overlaps laisse passer deux creneaux eloignes
+
+
+[NoCoverage] StringLiteral
+src/lib/price.ts:5:27
+-   const WEEKEND_SURCHARGE = "20";
++   const WEEKEND_SURCHARGE = "";
+
+[NoCoverage] BlockStatement
+src/lib/price.ts:7:54
+-   export function isWeekend(startsAt: string): boolean {
+-     const day = new Date(startsAt).getUTCDay();
+-     return day === 0 || day === 6;
+-   }
++   export function isWeekend(startsAt: string): boolean {}
+
+[NoCoverage] ConditionalExpression
+src/lib/price.ts:9:10
+-     return day === 0 || day === 6;
++     return true;
+
+[NoCoverage] ConditionalExpression
+src/lib/price.ts:9:10
+-     return day === 0 || day === 6;
++     return false;
+
+[NoCoverage] LogicalOperator
+src/lib/price.ts:9:10
+-     return day === 0 || day === 6;
++     return day === 0 && day === 6;
+
+[NoCoverage] ConditionalExpression
+src/lib/price.ts:9:10
+-     return day === 0 || day === 6;
++     return false || day === 6;
+
+[NoCoverage] EqualityOperator
+src/lib/price.ts:9:10
+-     return day === 0 || day === 6;
++     return day !== 0 || day === 6;
+
+[NoCoverage] ConditionalExpression
+src/lib/price.ts:9:23
+-     return day === 0 || day === 6;
++     return day === 0 || false;
+
+[NoCoverage] EqualityOperator
+src/lib/price.ts:9:23
+-     return day === 0 || day === 6;
++     return day === 0 || day !== 6;
+
+[NoCoverage] BlockStatement
+src/lib/price.ts:12:72
+-   export function hoursBetween(startsAt: string, endsAt: string): number {
+-     return (Date.parse(endsAt) - Date.parse(startsAt)) / 3600000;
+-   }
++   export function hoursBetween(startsAt: string, endsAt: string): number {}
+
+[NoCoverage] ArithmeticOperator
+src/lib/price.ts:13:10
+-     return (Date.parse(endsAt) - Date.parse(startsAt)) / 3600000;
++     return (Date.parse(endsAt) - Date.parse(startsAt)) * 3600000;
+
+[NoCoverage] ArithmeticOperator
+src/lib/price.ts:13:11
+-     return (Date.parse(endsAt) - Date.parse(startsAt)) / 3600000;
++     return (Date.parse(endsAt) + Date.parse(startsAt)) / 3600000;
+
+[NoCoverage] BlockStatement
+src/lib/price.ts:16:80
+-   export function priceFor(room: Room, startsAt: string, endsAt: string): number {
+-     const base = room.hourlyRate * hoursBetween(startsAt, endsAt);
+-     if (isWeekend(startsAt)) {
+-       return base + WEEKEND_SURCHARGE;
+-     }
+-     return base;
+-   }
++   export function priceFor(room: Room, startsAt: string, endsAt: string): number {}
+
+[NoCoverage] ArithmeticOperator
+src/lib/price.ts:17:16
+-     const base = room.hourlyRate * hoursBetween(startsAt, endsAt);
++     const base = room.hourlyRate / hoursBetween(startsAt, endsAt);
+
+[NoCoverage] ConditionalExpression
+src/lib/price.ts:18:7
+-     if (isWeekend(startsAt)) {
++     if (true) {
+
+[NoCoverage] ConditionalExpression
+src/lib/price.ts:18:7
+-     if (isWeekend(startsAt)) {
++     if (false) {
+
+[NoCoverage] BlockStatement
+src/lib/price.ts:18:28
+-     if (isWeekend(startsAt)) {
+-       return base + WEEKEND_SURCHARGE;
+-     }
++     if (isWeekend(startsAt)) {}
+
+[NoCoverage] ArithmeticOperator
+src/lib/price.ts:19:12
+-       return base + WEEKEND_SURCHARGE;
++       return base - WEEKEND_SURCHARGE;
+
+[NoCoverage] BlockStatement
+src/lib/validate.ts:8:88
+-   export function requireString(payload: Record<string, unknown>, field: string): string {
+-     const value = payload[field];
+-     if (typeof value !== "string" || value.trim() === "") {
+-       throw new ValidationError(`champ manquant ou vide : ${field}`);
+-     }
+-     return value;
+-   }
++   export function requireString(payload: Record<string, unknown>, field: string): string {}
+
+[NoCoverage] ConditionalExpression
+src/lib/validate.ts:10:7
+-     if (typeof value !== "string" || value.trim() === "") {
++     if (true) {
+
+[NoCoverage] ConditionalExpression
+src/lib/validate.ts:10:7
+-     if (typeof value !== "string" || value.trim() === "") {
++     if (false) {
+
+[NoCoverage] LogicalOperator
+src/lib/validate.ts:10:7
+-     if (typeof value !== "string" || value.trim() === "") {
++     if (typeof value !== "string" && value.trim() === "") {
+
+[NoCoverage] ConditionalExpression
+src/lib/validate.ts:10:7
+-     if (typeof value !== "string" || value.trim() === "") {
++     if (false || value.trim() === "") {
+
+[NoCoverage] EqualityOperator
+src/lib/validate.ts:10:7
+-     if (typeof value !== "string" || value.trim() === "") {
++     if (typeof value === "string" || value.trim() === "") {
+
+[NoCoverage] StringLiteral
+src/lib/validate.ts:10:24
+-     if (typeof value !== "string" || value.trim() === "") {
++     if (typeof value !== "" || value.trim() === "") {
+
+[NoCoverage] ConditionalExpression
+src/lib/validate.ts:10:36
+-     if (typeof value !== "string" || value.trim() === "") {
++     if (typeof value !== "string" || false) {
+
+[NoCoverage] EqualityOperator
+src/lib/validate.ts:10:36
+-     if (typeof value !== "string" || value.trim() === "") {
++     if (typeof value !== "string" || value.trim() !== "") {
+
+[NoCoverage] MethodExpression
+src/lib/validate.ts:10:36
+-     if (typeof value !== "string" || value.trim() === "") {
++     if (typeof value !== "string" || value === "") {
+
+[NoCoverage] StringLiteral
+src/lib/validate.ts:10:53
+-     if (typeof value !== "string" || value.trim() === "") {
++     if (typeof value !== "string" || value.trim() === "Stryker was here!") {
+
+[NoCoverage] BlockStatement
+src/lib/validate.ts:10:57
+-     if (typeof value !== "string" || value.trim() === "") {
+-       throw new ValidationError(`champ manquant ou vide : ${field}`);
+-     }
++     if (typeof value !== "string" || value.trim() === "") {}
+
+[NoCoverage] StringLiteral
+src/lib/validate.ts:11:31
+-       throw new ValidationError(`champ manquant ou vide : ${field}`);
++       throw new ValidationError(``);
+
+[NoCoverage] BlockStatement
+src/lib/validate.ts:16:86
+-   export function requireDate(payload: Record<string, unknown>, field: string): string {
+-     const value = requireString(payload, field);
+-     if (Number.isNaN(Date.parse(value))) {
+-       throw new ValidationError(`date invalide : ${field}`);
+-     }
+-     return value;
+-   }
++   export function requireDate(payload: Record<string, unknown>, field: string): string {}
+
+[NoCoverage] ConditionalExpression
+src/lib/validate.ts:18:7
+-     if (Number.isNaN(Date.parse(value))) {
++     if (true) {
+
+[NoCoverage] ConditionalExpression
+src/lib/validate.ts:18:7
+-     if (Number.isNaN(Date.parse(value))) {
++     if (false) {
+
+[NoCoverage] BlockStatement
+src/lib/validate.ts:18:40
+-     if (Number.isNaN(Date.parse(value))) {
+-       throw new ValidationError(`date invalide : ${field}`);
+-     }
++     if (Number.isNaN(Date.parse(value))) {}
+
+[NoCoverage] StringLiteral
+src/lib/validate.ts:19:31
+-       throw new ValidationError(`date invalide : ${field}`);
++       throw new ValidationError(``);
+
+[NoCoverage] BlockStatement
+src/lib/validate.ts:24:93
+-   export function requirePositiveInt(payload: Record<string, unknown>, field: string): number {
+-     const value = payload[field];
+-     if (typeof value !== "number" || !Number.isInteger(value) || value <= 0) {
+-       throw new ValidationError(`entier positif attendu : ${field}`);
+-     }
+-     return value;
+-   }
++   export function requirePositiveInt(payload: Record<string, unknown>, field: string): number {}
+
+[NoCoverage] ConditionalExpression
+src/lib/validate.ts:26:7
+-     if (typeof value !== "number" || !Number.isInteger(value) || value <= 0) {
++     if (true) {
+
+[NoCoverage] ConditionalExpression
+src/lib/validate.ts:26:7
+-     if (typeof value !== "number" || !Number.isInteger(value) || value <= 0) {
++     if (false) {
+
+[NoCoverage] LogicalOperator
+src/lib/validate.ts:26:7
+-     if (typeof value !== "number" || !Number.isInteger(value) || value <= 0) {
++     if ((typeof value !== "number" || !Number.isInteger(value)) && value <= 0) {
+
+[NoCoverage] ConditionalExpression
+src/lib/validate.ts:26:7
+-     if (typeof value !== "number" || !Number.isInteger(value) || value <= 0) {
++     if (false || value <= 0) {
+
+[NoCoverage] LogicalOperator
+src/lib/validate.ts:26:7
+-     if (typeof value !== "number" || !Number.isInteger(value) || value <= 0) {
++     if (typeof value !== "number" && !Number.isInteger(value) || value <= 0) {
+
+[NoCoverage] ConditionalExpression
+src/lib/validate.ts:26:7
+-     if (typeof value !== "number" || !Number.isInteger(value) || value <= 0) {
++     if (false || !Number.isInteger(value) || value <= 0) {
+
+[NoCoverage] EqualityOperator
+src/lib/validate.ts:26:7
+-     if (typeof value !== "number" || !Number.isInteger(value) || value <= 0) {
++     if (typeof value === "number" || !Number.isInteger(value) || value <= 0) {
+
+[NoCoverage] StringLiteral
+src/lib/validate.ts:26:24
+-     if (typeof value !== "number" || !Number.isInteger(value) || value <= 0) {
++     if (typeof value !== "" || !Number.isInteger(value) || value <= 0) {
+
+[NoCoverage] BooleanLiteral
+src/lib/validate.ts:26:36
+-     if (typeof value !== "number" || !Number.isInteger(value) || value <= 0) {
++     if (typeof value !== "number" || Number.isInteger(value) || value <= 0) {
+
+[NoCoverage] ConditionalExpression
+src/lib/validate.ts:26:64
+-     if (typeof value !== "number" || !Number.isInteger(value) || value <= 0) {
++     if (typeof value !== "number" || !Number.isInteger(value) || false) {
+
+[NoCoverage] EqualityOperator
+src/lib/validate.ts:26:64
+-     if (typeof value !== "number" || !Number.isInteger(value) || value <= 0) {
++     if (typeof value !== "number" || !Number.isInteger(value) || value < 0) {
+
+[NoCoverage] EqualityOperator
+src/lib/validate.ts:26:64
+-     if (typeof value !== "number" || !Number.isInteger(value) || value <= 0) {
++     if (typeof value !== "number" || !Number.isInteger(value) || value > 0) {
+
+[NoCoverage] BlockStatement
+src/lib/validate.ts:26:76
+-     if (typeof value !== "number" || !Number.isInteger(value) || value <= 0) {
+-       throw new ValidationError(`entier positif attendu : ${field}`);
+-     }
++     if (typeof value !== "number" || !Number.isInteger(value) || value <= 0) {}
+
+[NoCoverage] StringLiteral
+src/lib/validate.ts:27:31
+-       throw new ValidationError(`entier positif attendu : ${field}`);
++       throw new ValidationError(``);
+
+[NoCoverage] StringLiteral
+src/routes/bookings.ts:9:20
+-   bookingsRouter.get("/", (req, res) => {
++   bookingsRouter.get("", (req, res) => {
+
+[NoCoverage] BlockStatement
+src/routes/bookings.ts:9:39
+-   bookingsRouter.get("/", (req, res) => {
+-     const roomId = req.query.roomId;
+-     if (typeof roomId === "string") {
+-       res.json({ bookings: bookingsForRoom(roomId) });
+-       return;
+-     }
+-     res.json({ bookings });
+-   });
++   bookingsRouter.get("/", (req, res) => {});
+
+[NoCoverage] ConditionalExpression
+src/routes/bookings.ts:11:7
+-     if (typeof roomId === "string") {
++     if (true) {
+
+[NoCoverage] ConditionalExpression
+src/routes/bookings.ts:11:7
+-     if (typeof roomId === "string") {
++     if (false) {
+
+[NoCoverage] EqualityOperator
+src/routes/bookings.ts:11:7
+-     if (typeof roomId === "string") {
++     if (typeof roomId !== "string") {
+
+[NoCoverage] StringLiteral
+src/routes/bookings.ts:11:25
+-     if (typeof roomId === "string") {
++     if (typeof roomId === "") {
+
+[NoCoverage] BlockStatement
+src/routes/bookings.ts:11:35
+-     if (typeof roomId === "string") {
+-       res.json({ bookings: bookingsForRoom(roomId) });
+-       return;
+-     }
++     if (typeof roomId === "string") {}
+
+[NoCoverage] ObjectLiteral
+src/routes/bookings.ts:12:14
+-       res.json({ bookings: bookingsForRoom(roomId) });
++       res.json({});
+
+[NoCoverage] ObjectLiteral
+src/routes/bookings.ts:15:12
+-     res.json({ bookings });
++     res.json({});
+
+[NoCoverage] StringLiteral
+src/routes/bookings.ts:18:21
+-   bookingsRouter.post("/", (req, res) => {
++   bookingsRouter.post("", (req, res) => {
+
+[NoCoverage] BlockStatement
+src/routes/bookings.ts:18:40
+-   bookingsRouter.post("/", (req, res) => {
+-     try {
+-       const payload = req.body ?? {};
+-       const roomId = requireString(payload, "roomId");
+-       const who = requireString(payload, "who");
+-       const people = requirePositiveInt(payload, "people");
+-       const startsAt = requireDate(payload, "startsAt");
+-       const endsAt = requireDate(payload, "endsAt");
+-   
+-       if (Date.parse(endsAt) <= Date.parse(startsAt)) {
+-         throw new ValidationError("endsAt doit etre posterieur a startsAt");
+-       }
+-   
+-       const room = findRoom(roomId);
+-       if (!room) {
+-         throw new ValidationError(`salle inconnue : ${roomId}`);
+-       }
+-       if (people > room.capacity) {
+-         throw new ValidationError(`capacite depassee : ${people} > ${room.capacity}`);
+-       }
+-   
+-       const clash = bookingsForRoom(roomId).find((b) =>
+-         overlaps(startsAt, endsAt, b.startsAt, b.endsAt)
+-       );
+-       if (clash) {
+-         res.status(409).json({ error: "creneau deja reserve", conflictsWith: clash.id });
+-         return;
+-       }
+-   
+-       const booking = {
+-         id: nextBookingId(),
+-         roomId,
+-         who,
+-         people,
+-         startsAt,
+-         endsAt,
+-         price: priceFor(room, startsAt, endsAt)
+-       };
+-       bookings.push(booking);
+-       res.status(201).json({ booking });
+-     } catch (err) {
+-       if (err instanceof ValidationError) {
+-         res.status(err.status).json({ error: err.message });
+-         return;
+-       }
+-       throw err;
+-     }
+-   });
++   bookingsRouter.post("/", (req, res) => {});
+
+[NoCoverage] BlockStatement
+src/routes/bookings.ts:19:7
+-     try {
+-       const payload = req.body ?? {};
+-       const roomId = requireString(payload, "roomId");
+-       const who = requireString(payload, "who");
+-       const people = requirePositiveInt(payload, "people");
+-       const startsAt = requireDate(payload, "startsAt");
+-       const endsAt = requireDate(payload, "endsAt");
+-   
+-       if (Date.parse(endsAt) <= Date.parse(startsAt)) {
+-         throw new ValidationError("endsAt doit etre posterieur a startsAt");
+-       }
+-   
+-       const room = findRoom(roomId);
+-       if (!room) {
+-         throw new ValidationError(`salle inconnue : ${roomId}`);
+-       }
+-       if (people > room.capacity) {
+-         throw new ValidationError(`capacite depassee : ${people} > ${room.capacity}`);
+-       }
+-   
+-       const clash = bookingsForRoom(roomId).find((b) =>
+-         overlaps(startsAt, endsAt, b.startsAt, b.endsAt)
+-       );
+-       if (clash) {
+-         res.status(409).json({ error: "creneau deja reserve", conflictsWith: clash.id });
+-         return;
+-       }
+-   
+-       const booking = {
+-         id: nextBookingId(),
+-         roomId,
+-         who,
+-         people,
+-         startsAt,
+-         endsAt,
+-         price: priceFor(room, startsAt, endsAt)
+-       };
+-       bookings.push(booking);
+-       res.status(201).json({ booking });
+-     } catch (err) {
++     try {} catch (err) {
+
+[NoCoverage] LogicalOperator
+src/routes/bookings.ts:20:21
+-       const payload = req.body ?? {};
++       const payload = req.body && {};
+
+[NoCoverage] StringLiteral
+src/routes/bookings.ts:21:43
+-       const roomId = requireString(payload, "roomId");
++       const roomId = requireString(payload, "");
+
+[NoCoverage] StringLiteral
+src/routes/bookings.ts:22:40
+-       const who = requireString(payload, "who");
++       const who = requireString(payload, "");
+
+[NoCoverage] StringLiteral
+src/routes/bookings.ts:23:48
+-       const people = requirePositiveInt(payload, "people");
++       const people = requirePositiveInt(payload, "");
+
+[NoCoverage] StringLiteral
+src/routes/bookings.ts:24:43
+-       const startsAt = requireDate(payload, "startsAt");
++       const startsAt = requireDate(payload, "");
+
+[NoCoverage] StringLiteral
+src/routes/bookings.ts:25:41
+-       const endsAt = requireDate(payload, "endsAt");
++       const endsAt = requireDate(payload, "");
+
+[NoCoverage] ConditionalExpression
+src/routes/bookings.ts:27:9
+-       if (Date.parse(endsAt) <= Date.parse(startsAt)) {
++       if (true) {
+
+[NoCoverage] ConditionalExpression
+src/routes/bookings.ts:27:9
+-       if (Date.parse(endsAt) <= Date.parse(startsAt)) {
++       if (false) {
+
+[NoCoverage] EqualityOperator
+src/routes/bookings.ts:27:9
+-       if (Date.parse(endsAt) <= Date.parse(startsAt)) {
++       if (Date.parse(endsAt) < Date.parse(startsAt)) {
+
+[NoCoverage] EqualityOperator
+src/routes/bookings.ts:27:9
+-       if (Date.parse(endsAt) <= Date.parse(startsAt)) {
++       if (Date.parse(endsAt) > Date.parse(startsAt)) {
+
+[NoCoverage] BlockStatement
+src/routes/bookings.ts:27:53
+-       if (Date.parse(endsAt) <= Date.parse(startsAt)) {
+-         throw new ValidationError("endsAt doit etre posterieur a startsAt");
+-       }
++       if (Date.parse(endsAt) <= Date.parse(startsAt)) {}
+
+[NoCoverage] StringLiteral
+src/routes/bookings.ts:28:33
+-         throw new ValidationError("endsAt doit etre posterieur a startsAt");
++         throw new ValidationError("");
+
+[NoCoverage] BooleanLiteral
+src/routes/bookings.ts:32:9
+-       if (!room) {
++       if (room) {
+
+[NoCoverage] ConditionalExpression
+src/routes/bookings.ts:32:9
+-       if (!room) {
++       if (true) {
+
+[NoCoverage] ConditionalExpression
+src/routes/bookings.ts:32:9
+-       if (!room) {
++       if (false) {
+
+[NoCoverage] BlockStatement
+src/routes/bookings.ts:32:16
+-       if (!room) {
+-         throw new ValidationError(`salle inconnue : ${roomId}`);
+-       }
++       if (!room) {}
+
+[NoCoverage] StringLiteral
+src/routes/bookings.ts:33:33
+-         throw new ValidationError(`salle inconnue : ${roomId}`);
++         throw new ValidationError(``);
+
+[NoCoverage] ConditionalExpression
+src/routes/bookings.ts:35:9
+-       if (people > room.capacity) {
++       if (true) {
+
+[NoCoverage] ConditionalExpression
+src/routes/bookings.ts:35:9
+-       if (people > room.capacity) {
++       if (false) {
+
+[NoCoverage] EqualityOperator
+src/routes/bookings.ts:35:9
+-       if (people > room.capacity) {
++       if (people >= room.capacity) {
+
+[NoCoverage] EqualityOperator
+src/routes/bookings.ts:35:9
+-       if (people > room.capacity) {
++       if (people <= room.capacity) {
+
+[NoCoverage] BlockStatement
+src/routes/bookings.ts:35:33
+-       if (people > room.capacity) {
+-         throw new ValidationError(`capacite depassee : ${people} > ${room.capacity}`);
+-       }
++       if (people > room.capacity) {}
+
+[NoCoverage] StringLiteral
+src/routes/bookings.ts:36:33
+-         throw new ValidationError(`capacite depassee : ${people} > ${room.capacity}`);
++         throw new ValidationError(``);
+
+[NoCoverage] ArrowFunction
+src/routes/bookings.ts:39:48
+-       const clash = bookingsForRoom(roomId).find((b) =>
+-         overlaps(startsAt, endsAt, b.startsAt, b.endsAt)
++       const clash = bookingsForRoom(roomId).find(() => undefined
+
+[NoCoverage] ConditionalExpression
+src/routes/bookings.ts:42:9
+-       if (clash) {
++       if (true) {
+
+[NoCoverage] ConditionalExpression
+src/routes/bookings.ts:42:9
+-       if (clash) {
++       if (false) {
+
+[NoCoverage] BlockStatement
+src/routes/bookings.ts:42:16
+-       if (clash) {
+-         res.status(409).json({ error: "creneau deja reserve", conflictsWith: clash.id });
+-         return;
+-       }
++       if (clash) {}
+
+[NoCoverage] ObjectLiteral
+src/routes/bookings.ts:43:28
+-         res.status(409).json({ error: "creneau deja reserve", conflictsWith: clash.id });
++         res.status(409).json({});
+
+[NoCoverage] StringLiteral
+src/routes/bookings.ts:43:37
+-         res.status(409).json({ error: "creneau deja reserve", conflictsWith: clash.id });
++         res.status(409).json({ error: "", conflictsWith: clash.id });
+
+[NoCoverage] ObjectLiteral
+src/routes/bookings.ts:47:21
+-       const booking = {
+-         id: nextBookingId(),
+-         roomId,
+-         who,
+-         people,
+-         startsAt,
+-         endsAt,
+-         price: priceFor(room, startsAt, endsAt)
+-       };
++       const booking = {};
+
+[NoCoverage] CallExpression
+src/routes/bookings.ts:56:5
+-       bookings.push(booking);
++       ;
+
+[NoCoverage] ObjectLiteral
+src/routes/bookings.ts:57:26
+-       res.status(201).json({ booking });
++       res.status(201).json({});
+
+[NoCoverage] BlockStatement
+src/routes/bookings.ts:58:17
+-     } catch (err) {
+-       if (err instanceof ValidationError) {
+-         res.status(err.status).json({ error: err.message });
+-         return;
+-       }
+-       throw err;
+-     }
++     } catch (err) {}
+
+[NoCoverage] ConditionalExpression
+src/routes/bookings.ts:59:9
+-       if (err instanceof ValidationError) {
++       if (true) {
+
+[NoCoverage] ConditionalExpression
+src/routes/bookings.ts:59:9
+-       if (err instanceof ValidationError) {
++       if (false) {
+
+[NoCoverage] BlockStatement
+src/routes/bookings.ts:59:41
+-       if (err instanceof ValidationError) {
+-         res.status(err.status).json({ error: err.message });
+-         return;
+-       }
++       if (err instanceof ValidationError) {}
+
+[NoCoverage] ObjectLiteral
+src/routes/bookings.ts:60:35
+-         res.status(err.status).json({ error: err.message });
++         res.status(err.status).json({});
+
+[NoCoverage] StringLiteral
+src/routes/bookings.ts:67:23
+-   bookingsRouter.delete("/:id", (req, res) => {
++   bookingsRouter.delete("", (req, res) => {
+
+[NoCoverage] BlockStatement
+src/routes/bookings.ts:67:45
+-   bookingsRouter.delete("/:id", (req, res) => {
+-     const index = bookings.findIndex((b) => b.id === req.params.id);
+-     if (index === -1) {
+-       res.status(404).json({ error: "reservation inconnue" });
+-       return;
+-     }
+-     const [removed] = bookings.splice(index, 1);
+-     res.json({ cancelled: removed.id });
+-   });
++   bookingsRouter.delete("/:id", (req, res) => {});
+
+[NoCoverage] ArrowFunction
+src/routes/bookings.ts:68:36
+-     const index = bookings.findIndex((b) => b.id === req.params.id);
++     const index = bookings.findIndex(() => undefined);
+
+[NoCoverage] ConditionalExpression
+src/routes/bookings.ts:68:43
+-     const index = bookings.findIndex((b) => b.id === req.params.id);
++     const index = bookings.findIndex((b) => true);
+
+[NoCoverage] ConditionalExpression
+src/routes/bookings.ts:68:43
+-     const index = bookings.findIndex((b) => b.id === req.params.id);
++     const index = bookings.findIndex((b) => false);
+
+[NoCoverage] EqualityOperator
+src/routes/bookings.ts:68:43
+-     const index = bookings.findIndex((b) => b.id === req.params.id);
++     const index = bookings.findIndex((b) => b.id !== req.params.id);
+
+[NoCoverage] ConditionalExpression
+src/routes/bookings.ts:69:7
+-     if (index === -1) {
++     if (true) {
+
+[NoCoverage] ConditionalExpression
+src/routes/bookings.ts:69:7
+-     if (index === -1) {
++     if (false) {
+
+[NoCoverage] EqualityOperator
+src/routes/bookings.ts:69:7
+-     if (index === -1) {
++     if (index !== -1) {
+
+[NoCoverage] UnaryOperator
+src/routes/bookings.ts:69:17
+-     if (index === -1) {
++     if (index === +1) {
+
+[NoCoverage] BlockStatement
+src/routes/bookings.ts:69:21
+-     if (index === -1) {
+-       res.status(404).json({ error: "reservation inconnue" });
+-       return;
+-     }
++     if (index === -1) {}
+
+[NoCoverage] ObjectLiteral
+src/routes/bookings.ts:70:26
+-       res.status(404).json({ error: "reservation inconnue" });
++       res.status(404).json({});
+
+[NoCoverage] StringLiteral
+src/routes/bookings.ts:70:35
+-       res.status(404).json({ error: "reservation inconnue" });
++       res.status(404).json({ error: "" });
+
+[NoCoverage] ObjectLiteral
+src/routes/bookings.ts:74:12
+-     res.json({ cancelled: removed.id });
++     res.json({});
+
+[NoCoverage] StringLiteral
+src/routes/rooms.ts:6:17
+-   roomsRouter.get("/", (_req, res) => {
++   roomsRouter.get("", (_req, res) => {
+
+[NoCoverage] BlockStatement
+src/routes/rooms.ts:6:37
+-   roomsRouter.get("/", (_req, res) => {
+-     res.json({ rooms });
+-   });
++   roomsRouter.get("/", (_req, res) => {});
+
+[NoCoverage] ObjectLiteral
+src/routes/rooms.ts:7:12
+-     res.json({ rooms });
++     res.json({});
+
+[NoCoverage] StringLiteral
+src/routes/rooms.ts:10:17
+-   roomsRouter.get("/:id", (req, res) => {
++   roomsRouter.get("", (req, res) => {
+
+[NoCoverage] BlockStatement
+src/routes/rooms.ts:10:39
+-   roomsRouter.get("/:id", (req, res) => {
+-     const room = findRoom(req.params.id);
+-     if (!room) {
+-       res.status(404).json({ error: "salle inconnue" });
+-       return;
+-     }
+-     res.json({ room, bookings: bookingsForRoom(room.id) });
+-   });
++   roomsRouter.get("/:id", (req, res) => {});
+
+[NoCoverage] BooleanLiteral
+src/routes/rooms.ts:12:7
+-     if (!room) {
++     if (room) {
+
+[NoCoverage] ConditionalExpression
+src/routes/rooms.ts:12:7
+-     if (!room) {
++     if (true) {
+
+[NoCoverage] ConditionalExpression
+src/routes/rooms.ts:12:7
+-     if (!room) {
++     if (false) {
+
+[NoCoverage] BlockStatement
+src/routes/rooms.ts:12:14
+-     if (!room) {
+-       res.status(404).json({ error: "salle inconnue" });
+-       return;
+-     }
++     if (!room) {}
+
+[NoCoverage] ObjectLiteral
+src/routes/rooms.ts:13:26
+-       res.status(404).json({ error: "salle inconnue" });
++       res.status(404).json({});
+
+[NoCoverage] StringLiteral
+src/routes/rooms.ts:13:35
+-       res.status(404).json({ error: "salle inconnue" });
++       res.status(404).json({ error: "" });
+
+[NoCoverage] ObjectLiteral
+src/routes/rooms.ts:16:12
+-     res.json({ room, bookings: bookingsForRoom(room.id) });
++     res.json({});
+
+[NoCoverage] BlockStatement
+src/app.ts:5:29
+-   export function createApp() {
+-     const app = express();
+-     app.use(express.json());
+-     app.get("/health", (_req, res) => res.json({ ok: true }));
+-     app.use("/rooms", roomsRouter);
+-     app.use("/bookings", bookingsRouter);
+-     return app;
+-   }
++   export function createApp() {}
+
+[NoCoverage] CallExpression
+src/app.ts:7:3
+-     app.use(express.json());
++     ;
+
+[NoCoverage] StringLiteral
+src/app.ts:8:11
+-     app.get("/health", (_req, res) => res.json({ ok: true }));
++     app.get("", (_req, res) => res.json({ ok: true }));
+
+[NoCoverage] ArrowFunction
+src/app.ts:8:22
+-     app.get("/health", (_req, res) => res.json({ ok: true }));
++     app.get("/health", () => undefined);
+
+[NoCoverage] ObjectLiteral
+src/app.ts:8:46
+-     app.get("/health", (_req, res) => res.json({ ok: true }));
++     app.get("/health", (_req, res) => res.json({}));
+
+[NoCoverage] BooleanLiteral
+src/app.ts:8:52
+-     app.get("/health", (_req, res) => res.json({ ok: true }));
++     app.get("/health", (_req, res) => res.json({ ok: false }));
+
+[NoCoverage] StringLiteral
+src/app.ts:9:11
+-     app.use("/rooms", roomsRouter);
++     app.use("", roomsRouter);
+
+[NoCoverage] StringLiteral
+src/app.ts:10:11
+-     app.use("/bookings", bookingsRouter);
++     app.use("", bookingsRouter);
+
+[NoCoverage] BlockStatement
+src/store.ts:48:41
+-   export function nextBookingId(): string {
+-     seq += 1;
+-     return `bk-${seq}`;
+-   }
++   export function nextBookingId(): string {}
+
+[NoCoverage] AssignmentOperator
+src/store.ts:49:3
+-     seq += 1;
++     seq -= 1;
+
+[NoCoverage] StringLiteral
+src/store.ts:50:10
+-     return `bk-${seq}`;
++     return ``;
+
+[NoCoverage] BlockStatement
+src/store.ts:53:56
+-   export function findRoom(id: string): Room | undefined {
+-     return rooms.find((r) => r.id === id);
+-   }
++   export function findRoom(id: string): Room | undefined {}
+
+[NoCoverage] ArrowFunction
+src/store.ts:54:21
+-     return rooms.find((r) => r.id === id);
++     return rooms.find(() => undefined);
+
+[NoCoverage] ConditionalExpression
+src/store.ts:54:28
+-     return rooms.find((r) => r.id === id);
++     return rooms.find((r) => true);
+
+[NoCoverage] ConditionalExpression
+src/store.ts:54:28
+-     return rooms.find((r) => r.id === id);
++     return rooms.find((r) => false);
+
+[NoCoverage] EqualityOperator
+src/store.ts:54:28
+-     return rooms.find((r) => r.id === id);
++     return rooms.find((r) => r.id !== id);
+
+[NoCoverage] BlockStatement
+src/store.ts:57:60
+-   export function bookingsForRoom(roomId: string): Booking[] {
+-     return bookings.filter((b) => b.roomId === roomId);
+-   }
++   export function bookingsForRoom(roomId: string): Booking[] {}
+
+[NoCoverage] MethodExpression
+src/store.ts:58:10
+-     return bookings.filter((b) => b.roomId === roomId);
++     return bookings;
+
+[NoCoverage] ArrowFunction
+src/store.ts:58:26
+-     return bookings.filter((b) => b.roomId === roomId);
++     return bookings.filter(() => undefined);
+
+[NoCoverage] ConditionalExpression
+src/store.ts:58:33
+-     return bookings.filter((b) => b.roomId === roomId);
++     return bookings.filter((b) => true);
+
+[NoCoverage] ConditionalExpression
+src/store.ts:58:33
+-     return bookings.filter((b) => b.roomId === roomId);
++     return bookings.filter((b) => false);
+
+[NoCoverage] EqualityOperator
+src/store.ts:58:33
+-     return bookings.filter((b) => b.roomId === roomId);
++     return bookings.filter((b) => b.roomId !== roomId);
+
+[Survived] ObjectLiteral
+src/store.ts:19:3
+-     { id: "amphi", name: "Amphi Turing", capacity: 120, hourlyRate: 80 },
++     {},
+Ran all tests for this mutant.
+
+[Survived] StringLiteral
+src/store.ts:19:9
+-     { id: "amphi", name: "Amphi Turing", capacity: 120, hourlyRate: 80 },
++     { id: "", name: "Amphi Turing", capacity: 120, hourlyRate: 80 },
+Ran all tests for this mutant.
+
+[Survived] StringLiteral
+src/store.ts:19:24
+-     { id: "amphi", name: "Amphi Turing", capacity: 120, hourlyRate: 80 },
++     { id: "amphi", name: "", capacity: 120, hourlyRate: 80 },
+Ran all tests for this mutant.
+
+[Survived] ObjectLiteral
+src/store.ts:20:3
+-     { id: "salle-a", name: "Salle A", capacity: 12, hourlyRate: 25 },
++     {},
+Ran all tests for this mutant.
+
+[Survived] StringLiteral
+src/store.ts:20:9
+-     { id: "salle-a", name: "Salle A", capacity: 12, hourlyRate: 25 },
++     { id: "", name: "Salle A", capacity: 12, hourlyRate: 25 },
+Ran all tests for this mutant.
+
+[Survived] ObjectLiteral
+src/store.ts:21:3
+-     { id: "salle-b", name: "Salle B", capacity: 6, hourlyRate: 15 },
++     {},
+Ran all tests for this mutant.
+
+[Survived] StringLiteral
+src/store.ts:20:26
+-     { id: "salle-a", name: "Salle A", capacity: 12, hourlyRate: 25 },
++     { id: "salle-a", name: "", capacity: 12, hourlyRate: 25 },
+Ran all tests for this mutant.
+
+[Survived] StringLiteral
+src/store.ts:21:9
+-     { id: "salle-b", name: "Salle B", capacity: 6, hourlyRate: 15 },
++     { id: "", name: "Salle B", capacity: 6, hourlyRate: 15 },
+Ran all tests for this mutant.
+
+[Survived] StringLiteral
+src/store.ts:22:9
+-     { id: "labo", name: "Labo reseau", capacity: 20, hourlyRate: 40 }
++     { id: "", name: "Labo reseau", capacity: 20, hourlyRate: 40 }
+Ran all tests for this mutant.
+
+[Survived] StringLiteral
+src/store.ts:22:23
+-     { id: "labo", name: "Labo reseau", capacity: 20, hourlyRate: 40 }
++     { id: "labo", name: "", capacity: 20, hourlyRate: 40 }
+Ran all tests for this mutant.
+
+[Survived] ArrayDeclaration
+src/store.ts:25:36
+-   export const bookings: Booking[] = [
+-     {
+-       id: "bk-1001",
+-       roomId: "salle-a",
+-       who: "equipe-infra",
+-       people: 8,
+-       startsAt: "2026-10-05T09:00:00Z",
+-       endsAt: "2026-10-05T11:00:00Z",
+-       price: 50
+-     },
+-     {
+-       id: "bk-1002",
+-       roomId: "amphi",
+-       who: "conference-interne",
+-       people: 90,
+-       startsAt: "2026-10-06T14:00:00Z",
+-       endsAt: "2026-10-06T17:00:00Z",
+-       price: 240
+-     }
+-   ];
++   export const bookings: Booking[] = [];
+Ran all tests for this mutant.
+
+[Survived] StringLiteral
+src/store.ts:21:26
+-     { id: "salle-b", name: "Salle B", capacity: 6, hourlyRate: 15 },
++     { id: "salle-b", name: "", capacity: 6, hourlyRate: 15 },
+Ran all tests for this mutant.
+
+[Survived] ObjectLiteral
+src/store.ts:22:3
+-     { id: "labo", name: "Labo reseau", capacity: 20, hourlyRate: 40 }
++     {}
+Ran all tests for this mutant.
+
+[Survived] ObjectLiteral
+src/store.ts:26:3
+-     {
+-       id: "bk-1001",
+-       roomId: "salle-a",
+-       who: "equipe-infra",
+-       people: 8,
+-       startsAt: "2026-10-05T09:00:00Z",
+-       endsAt: "2026-10-05T11:00:00Z",
+-       price: 50
+-     },
++     {},
+Ran all tests for this mutant.
+
+[Survived] StringLiteral
+src/store.ts:27:9
+-       id: "bk-1001",
++       id: "",
+Ran all tests for this mutant.
+
+[Survived] StringLiteral
+src/store.ts:28:13
+-       roomId: "salle-a",
++       roomId: "",
+Ran all tests for this mutant.
+
+[Survived] StringLiteral
+src/store.ts:29:10
+-       who: "equipe-infra",
++       who: "",
+Ran all tests for this mutant.
+
+[Survived] StringLiteral
+src/store.ts:31:15
+-       startsAt: "2026-10-05T09:00:00Z",
++       startsAt: "",
+Ran all tests for this mutant.
+
+[Survived] StringLiteral
+src/store.ts:32:13
+-       endsAt: "2026-10-05T11:00:00Z",
++       endsAt: "",
+Ran all tests for this mutant.
+
+[Survived] ObjectLiteral
+src/store.ts:35:3
+-     {
+-       id: "bk-1002",
+-       roomId: "amphi",
+-       who: "conference-interne",
+-       people: 90,
+-       startsAt: "2026-10-06T14:00:00Z",
+-       endsAt: "2026-10-06T17:00:00Z",
+-       price: 240
+-     }
++     {}
+Ran all tests for this mutant.
+
+[Survived] StringLiteral
+src/store.ts:36:9
+-       id: "bk-1002",
++       id: "",
+Ran all tests for this mutant.
+
+[Survived] StringLiteral
+src/store.ts:37:13
+-       roomId: "amphi",
++       roomId: "",
+Ran all tests for this mutant.
+
+[Survived] StringLiteral
+src/store.ts:38:10
+-       who: "conference-interne",
++       who: "",
+Ran all tests for this mutant.
+
+[Survived] StringLiteral
+src/store.ts:40:15
+-       startsAt: "2026-10-06T14:00:00Z",
++       startsAt: "",
+Ran all tests for this mutant.
+
+[Survived] StringLiteral
+src/store.ts:41:13
+-       endsAt: "2026-10-06T17:00:00Z",
++       endsAt: "",
+Ran all tests for this mutant.
+
+Ran 0.50 tests per mutant on average.
+--------------|------------------|----------|-----------|------------|----------|----------|
+              | % Mutation score |          |           |            |          |          |
+File          |  total | covered | # killed | # timeout | # survived | # no cov | # errors |
+--------------|--------|---------|----------|-----------|------------|----------|----------|
+All files     |   4.35 |   22.22 |        8 |         0 |         28 |      148 |        0 |
+ lib          |  11.48 |   70.00 |        7 |         0 |          3 |       51 |        0 |
+  overlap.ts  |  70.00 |   70.00 |        7 |         0 |          3 |        0 |        0 |
+  price.ts    |   0.00 |    0.00 |        0 |         0 |          0 |       18 |        0 |
+  validate.ts |   0.00 |    0.00 |        0 |         0 |          0 |       33 |        0 |
+ routes       |   0.00 |    0.00 |        0 |         0 |          0 |       75 |        0 |
+  bookings.ts |   0.00 |    0.00 |        0 |         0 |          0 |       63 |        0 |
+  rooms.ts    |   0.00 |    0.00 |        0 |         0 |          0 |       12 |        0 |
+ app.ts       |   0.00 |    0.00 |        0 |         0 |          0 |        8 |        0 |
+ store.ts     |   2.50 |    3.85 |        1 |         0 |         25 |       14 |        0 |
+--------------|--------|---------|----------|-----------|------------|----------|----------|
+15:57:50 (27944) INFO MutationTestExecutor Done in 17 seconds.

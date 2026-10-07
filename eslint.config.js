@@ -1,14 +1,16 @@
+import js from "@eslint/js";
 import tseslint from "typescript-eslint";
 
-// Mise en place du lint — ticket INFRA-212.
-// Le parser TypeScript est branche, les regles seront choisies avec l'equipe.
-export default [
+export default tseslint.config(
+  js.configs.recommended,
+  ...tseslint.configs.recommended,
   {
     files: ["src/**/*.ts", "test/**/*.ts"],
-    languageOptions: {
-      parser: tseslint.parser,
-      parserOptions: { ecmaVersion: "latest", sourceType: "module" }
-    },
-    rules: {}
+    rules: {
+      eqeqeq: "error",
+      "no-var": "error",
+      "prefer-const": "error",
+      "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }]
+    }
   }
-];
+);
