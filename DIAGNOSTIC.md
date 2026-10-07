@@ -49,141 +49,92 @@ Ce qu'on observe :
 
 ## Les problèmes
 
-*exécuté* = commande lancée, capture à l'appui. *lu* = constaté dans le fichier.
+Quinze, les plus nets, un par ligne. *exécuté* = commande lancée, capture à l'appui.
+*lu* = constaté dans le fichier, faute d'avoir lancé OpenCode.
 
-### Rules
+| # | Brique | Symptôme | Cause (fichier) | Réparation |
+|---|---|---|---|---|
+| 1 | Rules | `npm test` et `npm run build`, documentés, répondent `Missing script`. La consigne « à lancer avant tout commit » est inapplicable. *exécuté* | `AGENTS.md`, `package.json` | Script `test` ajouté, plus `check` (types + lint + tests). `build` retiré de la doc : rien n'est compilé. |
+| 2 | Rules | Deux conventions décrivent un dépôt qui n'existe pas : « erreurs en `Result`, jamais de `throw` » (0 `Result` dans `src/`, la validation lève des exceptions) et « un `export default` par module » (0 dans `src/lib/`). L'agent de l'exercice 1 a suivi la seconde. *exécuté* | `AGENTS.md`, `src/lib/AGENTS.md` | Règles réécrites pour décrire ce que fait le code. |
+| 3 | MCP | Six serveurs déclarés, aucun ne sert : `salles-db` injoignable, `slack` plante au démarrage, `sentry` répond 401, `github` et `notion` démarrent sans jeton et refusent tout appel, `playwright` pilote un navigateur pour une API sans interface. Ceux qui répondent publient 75 outils, ≈ 28 000 tokens. Aucun prompt ni aucune règle ne les mentionne. *exécuté* | `opencode.json` | Les six retirés. `salles-db` reviendra avec la vraie base (INFRA-140). |
+| 4 | Commands | `/ship` fait `git add -A`, commit et push « sans poser de question », interdit de relancer les checks et de demander une relecture. Rien n'empêche de livrer du rouge, ni de livrer sur `main`. *lu* | `.opencode/command/ship.md` | Réécrite : refuse `main`, relance `npm run check`, demande le verdict de `reviewer`, confirmation avant commit et push. |
+| 5 | Subagents | Deux des six subagents ne sont pas joignables : `planner` est en `mode: primary`, et `tester` n'apparaît pas dans la table d'équipe de l'orchestrateur. Les étapes « Plan » et test réel n'ont jamais lieu. *lu* | `planner.md`, `architect.md` | `planner` en `mode: subagent` ; `tester` ajouté à la table et à l'étape « Verify ». |
+| 6 | Droits | `finder` ne peut rien lire : son `"*": deny` est la dernière règle, et dans OpenCode la dernière règle qui correspond l'emporte. C'est l'agent qui répond sans avoir rien lu. *lu* | `finder.md` | Joker remonté en première ligne, comme chez les autres agents. |
+| 7 | Droits | `architect`, qui « never writes code », a `edit: allow` et `bash: "*": allow`, et son prompt l'invite à faire lui-même ce qu'un subagent pourrait faire. Il n'a plus de raison de déléguer. *lu* | `architect.md` | `edit: deny`, `bash` limité à la lecture Git et aux checks ; les deux phrases du prompt rétablies. |
+| 8 | Droits | `reviewer` a `edit: allow` et la consigne « fix what you find » : il relit son propre code, alors que son prompt fonde sa valeur sur son indépendance. *lu* | `reviewer.md` | `edit: deny`, règle « never fix anything ». |
+| 9 | Droits | Deux subagents sortent de leur rôle : `dev` peut déléguer à d'autres `dev` (`task: allow`), `explorer`, agent de lecture, peut écrire partout et lancer `curl`. *lu* | `dev.md`, `explorer.md` | `task: deny` pour `dev` ; `explorer` limité à ses notes, `curl` retiré. |
+| 10 | Hooks | Le pre-commit n'est pas branché : `core.hooksPath` vide, `husky` absent des dépendances, pas de script `prepare`. Un commit d'un fichier fautif passe. *exécuté* | `.husky/pre-commit`, `package.json` | `husky` installé et branché. Le même commit est maintenant refusé. |
+| 11 | Hooks | `scripts/checks.sh` renvoie `0` même quand un check est rouge, et `/ship` s'appuie dessus pour ne rien revérifier. *exécuté* | `scripts/checks.sh` | Le script renvoie son vrai code et annonce « CHECKS ROUGES ». |
+| 12 | Lint et types | Un fichier avec `var`, `==`, `debugger`, `any`, `eval` et des paramètres non typés passe `eslint` et `tsc` avec le code 0. *exécuté* | `eslint.config.js` (`rules: {}`), `tsconfig.json` (`strict: false`), `// @ts-nocheck` dans `price.ts` | Règles recommandées, `strict: true`, directive retirée. Le même fichier : 6 erreurs de lint, 2 de types. |
+| 13 | Tests | 18 tests écrits, 5 exécutés. Deux fichiers ne tournent jamais (le lanceur ne prend que `*.spec.ts`) ; parmi le reste, des `skip` contenant `expect(true).toBe(true)` et des assertions sur un double défini dans le test. Couverture 21 %, score de mutation 4,35 %. *exécuté* | `vitest.config.ts`, `test/*.test.ts`, `test/store.spec.ts`, `test/overlap.spec.ts` | Fichiers renommés, faux tests remplacés, tests ajoutés : 59 tests, couverture 98,8 %, mutation 97,52 %. |
+| 14 | CI | La CI ne lance que le lint — celui qui n'a aucune règle. Les tests sont commentés (« ça bloquait les merges »). Une CI verte ne dit rien. *lu ; la CI GitHub n'a pas été déclenchée* | `.github/workflows/ci.yml` | typecheck, lint, tests avec seuils de couverture. |
+| 15 | Git | `.env` est suivi par Git (URL de base, secret de session, clé de facturation) et absent de `.gitignore`. *exécuté* | `.env`, `.gitignore` | Retiré de l'index, `.env.example` à la place, `.gitignore` complété. |
 
-| # | Symptôme | Cause | Réparation |
-|---|---|---|---|
-| 1 | `npm test` → `Missing script: "test"` ; `npm run build` → idem. La règle « à lancer avant tout commit » est inapplicable. *exécuté* | `AGENTS.md`, `package.json` | Script `test` ajouté, plus `check` (types + lint + tests). `build` retiré de la doc : `tsx` exécute le TypeScript, rien n'est compilé. |
-| 2 | « Les erreurs remontent en `Result`, jamais en `throw` » : `grep` ne trouve aucun `Result` ; `validate.ts` lève `ValidationError`, `bookings.ts` l'attrape. *exécuté* | `AGENTS.md` conv. 2 | Règle réécrite pour décrire ce que fait le code. |
-| 3 | « Un `export default` par module, obligatoire » : 0 `export default` dans `src/lib/*.ts`. L'agent de l'exercice 1 a suivi la règle et produit un module différent des trois autres. *exécuté* | `src/lib/AGENTS.md` | Règle remplacée par « exports nommés ». Les « scripts de facturation » qui la justifiaient n'existent pas dans le dépôt. |
-| 4 | Claude Code ne lit pas `AGENTS.md`. *comportement documenté de Claude Code, non mesuré* | absence de `CLAUDE.md` | `CLAUDE.md` qui importe `@AGENTS.md`. |
+### Les captures, brique par brique
+
+Rules (1, 2) :
 
 ![Rules avant](captures/avant-01-rules.png)
 ![Rules après](captures/apres-01-rules.png)
 
-### MCP
-
-Six serveurs déclarés, tous `enabled: true`. Aucun ne sert. Treize problèmes distincts ;
-la réparation est la même pour tous : **les six sont retirés** de `opencode.json`
-(`salles-db` reviendra avec la vraie base, INFRA-140).
-
-| # | Serveur | Symptôme | Preuve |
-|---|---|---|---|
-| 5a | `salles-db` | Injoignable : `ENOTFOUND mcp.internal.salles.lan`. | *exécuté* |
-| 5b | `salles-db` | Jeton écrit `${SALLES_MCP_TOKEN}` : OpenCode attend `{env:NOM}`, la chaîne partirait telle quelle dans l'en-tête. | *lu* |
-| 5c | `salles-db` | `SALLES_MCP_TOKEN` n'est défini nulle part : ni dans `.env`, ni dans la config. | *exécuté (`grep` → 0)* |
-| 5d | `salles-db` | Il branche une base qui n'existe pas encore : le service stocke en mémoire, la base arrive avec INFRA-140. | *lu (`AGENTS.md`)* |
-| 5e | `github` | Paquet `@modelcontextprotocol/server-github` déprécié sur npm (« Package no longer supported »). | *exécuté (`npm view`)* |
-| 5f | `github` | Aucun jeton fourni (pas de bloc `environment`) : le serveur démarre, publie 26 outils, et un vrai appel répond `Authentication Failed: Requires authentication`. | *exécuté* |
-| 5g | `slack` | Paquet déprécié lui aussi, et le processus sort en erreur au démarrage : `Please set SLACK_BOT_TOKEN and SLACK_TEAM_ID`. | *exécuté* |
-| 5h | `notion` | Démarre, publie 24 outils, et chaque appel répond 401 `unauthorized`. C'est le plus coûteux : ≈ 19 000 tokens de définitions à lui seul. | *exécuté* |
-| 5i | `sentry` | HTTP 401 : l'authentification n'a jamais été faite. Le projet n'embarque d'ailleurs aucun SDK Sentry (`grep -ci sentry package.json` → 0). | *exécuté* |
-| 5j | `playwright` | Un pilote de navigateur (25 outils) pour une API JSON sans interface. | *exécuté (outils listés)* |
-| 5k | tous les locaux | `npx -y` sans version, et `@playwright/mcp@latest` : chaque démarrage télécharge et exécute la dernière version publiée, sans verrou. | *lu* |
-| 5l | tous | **Personne ne s'en sert.** Zéro mention dans `AGENTS.md`, le README, les sept prompts d'agents et la command. Et les sept agents ont `"*": deny` sans aucune règle nommant un outil MCP : aucun agent de la chaîne n'a le droit d'en appeler un. | *exécuté (`grep` → 0 et 0 / 7)* |
-| 5m | `github`, `notion`, `playwright` | **75 outils, ≈ 28 000 tokens de définitions**, dont 33 qui écrivent ou agissent à l'extérieur (`push_files`, `create_repository`, `API-delete-a-block`, `browser_evaluate`…) — dans un dépôt qui suivait un `.env` (n° 23). | *exécuté* |
-
-Ce que je n'ai pas pu établir sans OpenCode : si ces définitions sont réellement envoyées
-au modèle quand l'agent a `"*": deny`, ou si OpenCode les masque. Dans le premier cas elles
-occupent 28 000 tokens pour rien ; dans le second elles sont chargées pour n'être jamais
-visibles. Le chiffre mesuré est la taille de ce que les serveurs publient, pas le contexte
-réellement consommé par `architect`.
-
-Les six ont été ajoutés en deux commits (11 juin et 2 juillet 2026), après la chaîne
-d'agents, sans qu'aucun prompt ne soit modifié pour les utiliser.
+MCP (3) :
 
 ![MCP avant](captures/avant-06-mcp.png)
 ![MCP avant, détail](captures/avant-06b-mcp-detail.png)
 ![MCP après](captures/apres-06-mcp.png)
 
-### Skills et commands
-
-| # | Symptôme | Cause | Réparation |
-|---|---|---|---|
-| 7 | `/ship` fait `git add -A`, commit, push « sans poser de question », interdit de relancer les checks (« le hook s'en est déjà occupé ») et de demander une relecture. Or le hook ne bloque rien (n° 14), `git add -A` embarque `.env`, et rien n'empêche de livrer sur `main`, ce que `AGENTS.md` interdit. *lu* | `.opencode/command/ship.md` | Réécrite : refuse `main`, relance `npm run check`, demande le verdict de `reviewer`, ajoute les fichiers un par un, confirmation avant commit et push. |
-
-Aucun skill n'existait. Ce n'est pas un défaut : le dépôt n'a pas de savoir-faire répété à
-empaqueter. Le skill `audit-harness` ajouté dans `.claude/skills/` est une demande du TP,
-pas une réparation.
-
-### Subagents et droits
-
-Tout ce bloc est *lu* ; la capture montre les frontmatters avant et après.
-
-| # | Symptôme attendu | Cause | Réparation |
-|---|---|---|---|
-| 8 | `finder` ne peut rien lire : son `"*": deny` est la **dernière** règle, et dans OpenCode la dernière règle qui correspond l'emporte. C'est l'agent qui « répond sans avoir rien lu ». | `.opencode/agent/finder.md` | Joker remonté en première ligne, comme chez les six autres. |
-| 9 | `planner` est en `mode: primary` : l'orchestrateur ne peut pas l'appeler comme subagent. L'étape « Plan » de la boucle n'a jamais lieu. | `planner.md` | `mode: subagent`. |
-| 10 | `tester` n'apparaît pas dans la table d'équipe de l'orchestrateur : il ne travaille jamais. | `architect.md` | Ligne ajoutée, et `tester` intégré à l'étape « Verify ». |
-| 11 | `architect` « never writes code » mais a `edit: allow` et `bash: "*": allow` (commit « unblock, trop de refus de permission »). Son prompt dit qu'une question qu'un subagent peut traiter, « it can also be answered by you », et de tout faire lui-même en deçà de trois appels. Il n'a plus de raison de déléguer. | `architect.md` | `edit: deny`, `bash` limité à la lecture Git et aux checks (`ask` pour add/commit/push). Les deux phrases rétablies : ce qu'un subagent peut traiter doit l'être par lui. |
-| 12 | `reviewer` : « fixes what it finds », `edit: allow`. Il relit donc son propre code ; son prompt dit pourtant que son indépendance est sa seule valeur. | `reviewer.md` | `edit: deny`, règle « never fix anything », description réalignée. |
-| 13 | `dev` a `task: allow` et la consigne de découper le travail vers d'autres `dev` — alors que l'orchestrateur interdit deux `dev` sur les mêmes fichiers. Il peut aussi commiter, ce que son prompt lui interdit. | `dev.md` | `task: deny`, `git commit*: deny`, consigne remplacée par « arrête-toi et rapporte », format de retour imposé. |
-| 13b | `explorer`, agent de lecture, a `edit: allow` sur tout le dépôt, `curl*: allow` et la consigne d'interroger « an internal service » — dans un dépôt qui contenait des secrets (n° 23). | `explorer.md` | Écriture limitée à `.opencode/plans/*-notes.md`, `curl` retiré, `webfetch: ask`. |
-| 13c | `finder` : description et prompt lui demandent d'expliquer le design « en prose, généreusement », ce qui est le rôle d'`explorer` et contredit ses propres règles (« never read a whole file »). | `finder.md` | Rôle recentré : une liste `fichier:ligne`, rien d'autre. |
+Subagents et droits (5 à 9) — lecture des frontmatters :
 
 ![Droits avant](captures/avant-08-droits.png)
 ![Droits après](captures/apres-08-droits.png)
 
-### Hooks
-
-| # | Symptôme | Cause | Réparation |
-|---|---|---|---|
-| 14 | Le pre-commit n'est pas branché : `core.hooksPath` vide, `husky` absent des dépendances, pas de script `prepare`, fichier non exécutable (`100644`), et il source un `husky.sh` qui n'existe pas. Un commit d'un fichier fautif **passe**. *exécuté* | `.husky/pre-commit`, `package.json` | `husky` installé, `prepare: husky`, hook réécrit et rendu exécutable. Le même commit est maintenant **refusé**. |
-| 15 | `scripts/checks.sh` renvoie `0` quoi qu'il arrive, et son en-tête dit qu'il est branché dans `opencode.json`, où il n'y a aucun hook. *exécuté* | `scripts/checks.sh` | Le script renvoie son vrai code et dit « CHECKS ROUGES ». L'intention d'INFRA-231 (ne pas interrompre l'agent) est conservée dans le plugin, qui lit la sortie sans lever d'erreur. En-tête corrigé. |
-| 16 | Aucun hook côté Claude Code. | — | `.claude/settings.json` + `scripts/claude-post-edit.sh` : après l'écriture d'un `.ts`, les checks tournent et le rouge revient à l'agent. *exécuté dans une vraie session* |
+Hooks (10, 11) :
 
 ![Hooks avant](captures/avant-04-hooks.png)
 ![Hooks après](captures/apres-04-hooks.png)
-![Hook dans une session Claude Code](captures/apres-11-hook-agent.png)
 
-### Lint et types
-
-| # | Symptôme | Cause | Réparation |
-|---|---|---|---|
-| 17 | Un fichier avec `var`, `==`, `debugger`, `any`, `eval`, variable inutilisée et paramètres non typés : `eslint` → code 0, `tsc` → code 0. *exécuté* | `eslint.config.js` (`rules: {}`), `tsconfig.json` (`strict: false`) | Règles recommandées d'ESLint et de typescript-eslint, `eqeqeq`, `no-var` ; `strict: true`. Le même fichier : 6 erreurs de lint, 2 de types. |
-| 18 | `// @ts-nocheck` en tête de `price.ts` masque une addition nombre + chaîne. *exécuté (n° 20)* | `src/lib/price.ts` | Directive retirée. |
+Lint et types (12) :
 
 ![Lint avant](captures/avant-03-lint-types.png)
 ![Lint après](captures/apres-03-lint-types.png)
 
-### Tests
-
-| # | Symptôme | Cause | Réparation |
-|---|---|---|---|
-| 19 | 18 tests écrits, **5 exécutés**, 4 ignorés. `bookings.test.ts` et `price.test.ts` ne tournent jamais : le lanceur ne prend que `*.spec.ts`. *exécuté* | `vitest.config.ts` + nom des fichiers | Fichiers renommés en `.spec.ts`. La convention INFRA-205 est gardée et écrite dans `AGENTS.md`. |
-| 20 | Lancés sans le filtre, 2 tests échouent et désignent deux bugs de production (ci-dessous). *exécuté* | — | Bugs corrigés. |
-| 21a | `store.spec.ts` : deux tests sur trois vérifient un double défini dans le test, pas le store. *lu ; à la mutation, 1 mutant tué sur 40 dans `store.ts`* | `test/store.spec.ts` | Tests réécrits sur les vraies fonctions (sans modifier `src/store.ts`). |
-| 21b | `overlap.spec.ts` : deux `skip` contiennent `expect(true).toBe(true)`, un troisième ignore justement le cas « bout à bout » qui échoue. *lu* | `test/overlap.spec.ts` | Trois vrais tests. |
-| 21c | Couverture 21 %, score de mutation **4,35 %**. Routes, validation et tarification : 0 %. *exécuté* | — | Tests ajoutés (validation, routes, annulation, conflit) : 59 tests, couverture 98,8 %, mutation **97,52 %**. Seuils de couverture dans `vitest.config.ts`. |
+Tests (13) :
 
 ![Tests avant](captures/avant-02-tests.png)
 ![Tests après](captures/apres-02-tests.png)
 ![Mesures avant](captures/avant-07-mesures.png)
 ![Mesures après](captures/apres-07-mesures.png)
 
-**Bugs attrapés par le filet une fois réparé**, tous reproduits sur l'API lancée :
+CI et Git (14, 15) :
+
+![CI et Git avant](captures/avant-09-ci-git.png)
+![CI et Git après](captures/apres-09-ci-git.png)
+
+### Ce que le filet a attrapé une fois réparé
+
+Ce ne sont pas des défauts du harness mais leur conséquence : deux bugs de production que
+les tests écartés et le `@ts-nocheck` cachaient, reproduits sur l'API lancée.
 
 | Bug | Preuve | Cause | Correction |
 |---|---|---|---|
-| Une réservation de week-end coûte `"5020"` au lieu de `70` (chaîne, pas nombre). | `curl` ; test `price` ; `tsc` strict sans `@ts-nocheck` | `WEEKEND_SURCHARGE = "20"` | `20` |
+| Une réservation de week-end coûte `"5020"` au lieu de `70` (chaîne, pas nombre). | `curl` ; test `price` ; `tsc` strict | `WEEKEND_SURCHARGE = "20"` | `20` |
 | Deux réservations bout à bout sont refusées (409), alors que la doc dit `[debut, fin[`. | `curl` ; test `bookings` | `<=` dans `overlaps` | `<` |
-| `"Nov 2 2026"` est accepté comme date, contre la convention ISO 8601 UTC. *trouvé en sondant l'API, pas par un test existant* | `curl` → 201 | `requireDate` se contente de `Date.parse` | Format ISO UTC exigé, tests ajoutés. |
+
+En sondant l'API, j'ai aussi fait refuser les dates qui ne sont pas de l'ISO 8601 UTC
+(`"Nov 2 2026"` était accepté, contre la convention 3).
 
 ![Bugs avant](captures/avant-05-bugs.png)
 ![Bugs après](captures/apres-05-bugs.png)
 
-### CI et Git
+### Ajouts pour Claude Code
 
-| # | Symptôme | Cause | Réparation |
-|---|---|---|---|
-| 22 | La CI ne lance que le lint — celui qui n'a aucune règle. Les tests sont commentés (« ça bloquait les merges »), pas de typecheck. Une CI verte ne dit rien. *exécuté (lecture du workflow ; la CI GitHub elle-même n'a pas été déclenchée)* | `.github/workflows/ci.yml` | typecheck, lint, tests avec seuils de couverture. |
-| 23 | `.env` est suivi par Git (URL de base, secret de session, clé de facturation) et absent de `.gitignore`. *exécuté* | `.env`, `.gitignore` | Retiré de l'index, `.env.example` à la place, `.gitignore` complété. |
-| 24 | Sous Windows, les scripts shell sortent en CRLF. *exécuté* | pas de `.gitattributes` | `.gitattributes` : LF pour `*.sh` et `.husky/*`. |
+Pas des réparations, mais ce qu'il fallait pour jouer le TP hors d'OpenCode : `CLAUDE.md`
+qui importe `AGENTS.md`, un hook d'après écriture équivalent au plugin
+(`.claude/settings.json`), `.gitattributes` pour garder les scripts en LF sous Windows, et
+le skill `audit-harness` généré avec skill-creator. Aucun skill n'existait dans le dépôt,
+et ce n'était pas un défaut.
 
-![CI et Git avant](captures/avant-09-ci-git.png)
-![CI et Git après](captures/apres-09-ci-git.png)
+![Hook dans une session Claude Code](captures/apres-11-hook-agent.png)
 
 ## Ce qui ressemble à un défaut et n'en est pas un
 
