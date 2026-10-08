@@ -15,5 +15,6 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - run: npm run typecheck
       - run: npm run lint
-      # - run: npm run test:unit   # TODO remettre, ca bloquait les merges
+      - run: npm run test:coverage

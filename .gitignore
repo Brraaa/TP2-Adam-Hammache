@@ -1,4 +1,11 @@
 node_modules/
 coverage/
+dist/
 *.log
+.env
+.env.*
+!.env.example
 .opencode/scratch/
+.stryker-tmp/
+reports/
+.claude/settings.local.json
